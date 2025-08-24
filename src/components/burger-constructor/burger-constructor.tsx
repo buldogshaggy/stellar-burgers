@@ -1,24 +1,42 @@
 import { FC, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { RootState, AppDispatch } from '../store';
+import { orderBurger, closeOrderModal } from '../store/ingredientSlice';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
+  const dispatch: AppDispatch = useDispatch();
 
-  const orderRequest = false;
-
-  const orderModalData = null;
+  // Берём данные из стора
+  const constructorItems = useSelector(
+    (state: RootState) => state.ingredients.constructorItems
+  );
+  const orderRequest = useSelector(
+    (state: RootState) => state.ingredients.orderRequest
+  );
+  const orderModalData = useSelector(
+    (state: RootState) => state.ingredients.orderModalData
+  );
 
   const onOrderClick = () => {
     if (!constructorItems.bun || orderRequest) return;
+
+    const ingredientIds = constructorItems.ingredients.map(
+      (i: TConstructorIngredient) => i._id
+    );
+
+    if (constructorItems.bun) {
+      ingredientIds.unshift(constructorItems.bun._id);
+      ingredientIds.push(constructorItems.bun._id);
+    }
+
+    dispatch(orderBurger(ingredientIds));
   };
-  const closeOrderModal = () => {};
+
+  const handleCloseModal = () => {
+    dispatch(closeOrderModal());
+  };
 
   const price = useMemo(
     () =>
@@ -30,8 +48,6 @@ export const BurgerConstructor: FC = () => {
     [constructorItems]
   );
 
-  return null;
-
   return (
     <BurgerConstructorUI
       price={price}
@@ -39,7 +55,7 @@ export const BurgerConstructor: FC = () => {
       constructorItems={constructorItems}
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
-      closeOrderModal={closeOrderModal}
+      closeOrderModal={handleCloseModal}
     />
   );
 };
