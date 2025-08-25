@@ -8,13 +8,15 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
   ({ ingredient, count }) => {
     const location = useLocation();
 
-    const handleAdd = () => {};
+    const handleAdd = () => {
+      // TODO: логика добавления в конструктор
+    };
 
     return (
       <BurgerIngredientUI
         ingredient={ingredient}
         count={count}
-        locationState={{ background: location }}
+        locationState={{ background: location }} // сюда пойдет
         handleAdd={handleAdd}
       />
     );

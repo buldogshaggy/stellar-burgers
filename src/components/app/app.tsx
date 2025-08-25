@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AppHeader } from '@components';
 import {
   ConstructorPage,
@@ -22,14 +22,19 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
 const App = () => {
   const location = useLocation();
-  const state = location.state as { backgroundLocation?: Location };
+  const state = location.state as { background?: Location };
+  const navigate = useNavigate();
+
+  const closeModal = () => {
+    navigate(-1); // вернуться на предыдущий маршрут
+  };
 
   return (
     <div className={styles.app}>
       <AppHeader />
 
       {/* Основные маршруты */}
-      <Routes location={state?.backgroundLocation || location}>
+      <Routes location={state?.background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
 
@@ -87,14 +92,14 @@ const App = () => {
         <Route path='*' element={<NotFound404 />} />
       </Routes>
 
-      {state?.backgroundLocation && (
+      {state?.background && (
         <Routes>
           <Route
             path='/feed/:number'
             element={
               <Modal
                 title='Информация о заказе'
-                onClose={() => console.log('Закрыть')}
+                onClose={closeModal}
               >
                 <OrderInfo />
               </Modal>
@@ -106,7 +111,7 @@ const App = () => {
             element={
               <Modal
                 title='Детали ингредиента'
-                onClose={() => console.log('Закрыть')}
+                onClose={closeModal}
               >
                 <IngredientDetails />
               </Modal>
@@ -119,7 +124,7 @@ const App = () => {
               <ProtectedRoute>
                 <Modal
                   title='Информация о заказе'
-                  onClose={() => console.log('Закрыть')}
+                  onClose={closeModal}
                 >
                   <OrderInfo />
                 </Modal>
