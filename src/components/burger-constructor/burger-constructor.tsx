@@ -8,7 +8,6 @@ import { orderBurger, closeOrderModal } from '../store/ingredientSlice';
 export const BurgerConstructor: FC = () => {
   const dispatch: AppDispatch = useDispatch();
 
-  // Берём данные из стора
   const constructorItems = useSelector(
     (state: RootState) => state.ingredients.constructorItems
   );

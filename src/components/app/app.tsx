@@ -1,4 +1,10 @@
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  Navigate
+} from 'react-router-dom';
 import { AppHeader } from '@components';
 import {
   ConstructorPage,
@@ -13,11 +19,32 @@ import {
 } from '@pages';
 import { Modal, OrderInfo, IngredientDetails } from '@components';
 import styles from './app.module.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../components/store';
 
-// Простейший ProtectedRoute
+// Защищённый маршрут (только для авторизованных)
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const isAuth = false; // TODO: заменить на реальную проверку из Redux/Context
-  return isAuth ? children : <Login />;
+  const user = useSelector((state: RootState) => state.user.user);
+  const location = useLocation();
+
+  if (!user) {
+    // если не авторизован → редиректим на /login
+    return <Navigate to='/login' state={{ from: location }} replace />;
+  }
+
+  return children;
+};
+
+// Публичный маршрут (только для неавторизованных)
+const PublicRoute = ({ children }: { children: JSX.Element }) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
+  if (user) {
+    // если уже залогинен → отправляем на профиль
+    return <Navigate to='/profile' replace />;
+  }
+
+  return children;
 };
 
 const App = () => {
@@ -26,7 +53,7 @@ const App = () => {
   const navigate = useNavigate();
 
   const closeModal = () => {
-    navigate(-1); // вернуться на предыдущий маршрут
+    navigate(-1);
   };
 
   return (
@@ -38,39 +65,41 @@ const App = () => {
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
 
-        {/* Защищённые */}
+        {/* Публичные страницы */}
         <Route
           path='/login'
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <Login />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
         <Route
           path='/register'
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <Register />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <ForgotPassword />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <ResetPassword />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
+
+        {/* Защищённые страницы */}
         <Route
           path='/profile'
           element={
@@ -92,40 +121,30 @@ const App = () => {
         <Route path='*' element={<NotFound404 />} />
       </Routes>
 
+      {/* Модалки */}
       {state?.background && (
         <Routes>
           <Route
             path='/feed/:number'
             element={
-              <Modal
-                title='Информация о заказе'
-                onClose={closeModal}
-              >
+              <Modal title='Информация о заказе' onClose={closeModal}>
                 <OrderInfo />
               </Modal>
             }
           />
-
           <Route
             path='/ingredients/:id'
             element={
-              <Modal
-                title='Детали ингредиента'
-                onClose={closeModal}
-              >
+              <Modal title='Детали ингредиента' onClose={closeModal}>
                 <IngredientDetails />
               </Modal>
             }
           />
-
           <Route
             path='/profile/orders/:number'
             element={
               <ProtectedRoute>
-                <Modal
-                  title='Информация о заказе'
-                  onClose={closeModal}
-                >
+                <Modal title='Информация о заказе' onClose={closeModal}>
                   <OrderInfo />
                 </Modal>
               </ProtectedRoute>

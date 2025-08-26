@@ -1,8 +1,10 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import ingredientsReducer from './ingredientSlice';
+import userReducer from './userSlice';
 
 const rootReducer = combineReducers({
-  ingredients: ingredientsReducer
+  ingredients: ingredientsReducer,
+  user: userReducer
 });
 
 export const store = configureStore({
