@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { registerUserApi, loginUserApi } from '../../utils/burger-api';
+import {
+  registerUserApi,
+  loginUserApi,
+  updateUserApi,
+  getUserApi,
+  logoutApi
+} from '../../utils/burger-api';
 import { TUser, TRegisterData } from '../../utils/types';
 
 type UserState = {
@@ -20,11 +26,8 @@ export const loginUser = createAsyncThunk(
   async (data: { email: string; password: string }, thunkAPI) => {
     try {
       const response = await loginUserApi(data);
-
-      // сохраняем токены в localStorage
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
-
       return response.user;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message || 'Ошибка входа');
@@ -38,14 +41,41 @@ export const registerUser = createAsyncThunk(
   async (data: TRegisterData, thunkAPI) => {
     try {
       const response = await registerUserApi(data);
-
-      // сохраняем токены в localStorage
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
-
       return response.user;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message || 'Ошибка регистрации');
+    }
+  }
+);
+
+// 🔹 Получить данные пользователя (например, при загрузке приложения)
+export const fetchUser = createAsyncThunk(
+  'user/fetchUser',
+  async (_, thunkAPI) => {
+    try {
+      const response = await getUserApi();
+      return response.user;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.message || 'Ошибка получения пользователя'
+      );
+    }
+  }
+);
+
+// 🔹 Обновить данные пользователя
+export const updateUser = createAsyncThunk(
+  'user/update',
+  async (data: Partial<TRegisterData>, thunkAPI) => {
+    try {
+      const response = await updateUserApi(data);
+      return response.user;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.message || 'Ошибка обновления профиля'
+      );
     }
   }
 );
@@ -85,6 +115,32 @@ const userSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // получение user
+      .addCase(fetchUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // обновление user
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

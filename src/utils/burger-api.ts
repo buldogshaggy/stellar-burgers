@@ -172,7 +172,12 @@ export const loginUserApi = (data: TLoginData) =>
   })
     .then((res) => checkResponse<TAuthResponse>(res))
     .then((data) => {
-      if (data?.success) return data;
+      if (data?.success) {
+        // Сохраняем токены
+        setCookie('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        return data;
+      }
       return Promise.reject(data);
     });
 
@@ -213,8 +218,11 @@ export const getUserApi = () =>
     } as HeadersInit
   });
 
-export const updateUserApi = (user: Partial<TRegisterData>) =>
-  fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
+export const updateUserApi = (user: Partial<TRegisterData>) => {
+  const token = getCookie('accessToken');
+  console.log('Access token:', token); // <- проверка токена
+
+  return fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -222,6 +230,7 @@ export const updateUserApi = (user: Partial<TRegisterData>) =>
     } as HeadersInit,
     body: JSON.stringify(user)
   });
+};
 
 export const logoutApi = () =>
   fetch(`${URL}/auth/logout`, {

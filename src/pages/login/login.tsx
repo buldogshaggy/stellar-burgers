@@ -23,7 +23,6 @@ export const Login: FC = () => {
 
   // Редирект после успешного логина
   useEffect(() => {
-    console.log('user state changed:', user);
     if (user) {
       navigate('/profile');
     }
