@@ -8,7 +8,7 @@ import {
   ProfileIcon
 } from '@zlden/react-developer-burger-ui-components';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../../../services/store';
 import { RootState } from '../../store';
 
 export const AppHeaderUI: FC<TAppHeaderUIProps> = () => {
@@ -63,7 +63,9 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = () => {
         </div>
 
         <div className={styles.logo}>
-          <Logo className='' />
+          <NavLink to='/' end>
+            <Logo className='' />
+          </NavLink>
         </div>
 
         <div className={styles.link_position_last}>

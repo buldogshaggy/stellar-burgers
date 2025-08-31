@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from '../../services/store';
 import { useParams } from 'react-router-dom';
 import { RootState, AppDispatch } from '../store';
 import { TIngredient, TOrderInfo, TOrder } from '../../utils/types';
@@ -9,7 +9,7 @@ import { fetchOrderByNumber } from '../store/ordersSlice';
 
 export const OrderInfo: FC<{ orderNumber?: number }> = ({ orderNumber }) => {
   const { number } = useParams<{ number: string }>();
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   const feedOrders = useSelector((state: RootState) => state.feed.orders);
   const userOrders = useSelector((state: RootState) => state.orders.orders);

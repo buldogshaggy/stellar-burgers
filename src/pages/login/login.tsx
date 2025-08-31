@@ -1,5 +1,5 @@
 import { FC, SyntheticEvent, useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../../services/store';
 import { LoginUI } from '@ui-pages';
 import { loginUser } from '../../components/store/userSlice';
 import { RootState, AppDispatch } from '../../components/store';

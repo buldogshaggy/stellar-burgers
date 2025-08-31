@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from '../../services/store';
 import { ProfileMenuUI } from '@ui';
 import { logoutApi } from '../../utils/burger-api';
 import { logout } from '../store/userSlice';

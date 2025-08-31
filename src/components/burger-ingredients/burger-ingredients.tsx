@@ -4,12 +4,12 @@ import { useInView } from 'react-intersection-observer';
 import { TTabMode } from '@utils-types';
 import { BurgerIngredientsUI } from '../ui/burger-ingredients';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from '../../services/store';
 import { RootState, AppDispatch } from '../store';
 import { fetchIngredients } from '../store/ingredientSlice';
 
 export const BurgerIngredients: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   //Получаем ингредиенты и статус из Redux
   const { items, status, error } = useSelector(

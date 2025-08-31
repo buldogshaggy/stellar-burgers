@@ -19,8 +19,10 @@ import {
 } from '@pages';
 import { Modal, OrderInfo, IngredientDetails } from '@components';
 import styles from './app.module.css';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from '../../services/store';
 import { RootState } from '../../components/store';
+import { useEffect } from 'react';
+import { autoLogin } from '../store/userSlice';
 
 //Защищённый маршрут (только для авторизованных)
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
@@ -51,6 +53,11 @@ const App = () => {
   const location = useLocation();
   const state = location.state as { background?: Location };
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(autoLogin());
+  }, [dispatch]);
 
   const closeModal = () => {
     navigate(-1);

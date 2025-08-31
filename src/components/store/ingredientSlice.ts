@@ -62,6 +62,16 @@ const ingredientsSlice = createSlice({
     removeIngredient: (state, action: PayloadAction<number>) => {
       state.constructorItems.ingredients.splice(action.payload, 1);
     },
+    moveIngredient: (
+      state,
+      action: PayloadAction<{ fromIndex: number; toIndex: number }>
+    ) => {
+      const { fromIndex, toIndex } = action.payload;
+      const items = state.constructorItems.ingredients;
+      if (toIndex < 0 || toIndex >= items.length) return;
+      const [item] = items.splice(fromIndex, 1);
+      items.splice(toIndex, 0, item);
+    },
     closeOrderModal: (state) => {
       state.orderModalData = null;
     }
@@ -101,6 +111,11 @@ const ingredientsSlice = createSlice({
   }
 });
 
-export const { setBun, addIngredient, removeIngredient, closeOrderModal } =
-  ingredientsSlice.actions;
+export const {
+  setBun,
+  addIngredient,
+  removeIngredient,
+  closeOrderModal,
+  moveIngredient
+} = ingredientsSlice.actions;
 export default ingredientsSlice.reducer;

@@ -80,6 +80,22 @@ export const updateUser = createAsyncThunk(
   }
 );
 
+//автологин
+export const autoLogin = createAsyncThunk(
+  'user/autoLogin',
+  async (_, thunkAPI) => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) return thunkAPI.rejectWithValue('Нет токена');
+
+    try {
+      const response = await getUserApi();
+      return response.user;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message || 'Ошибка автологина');
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -142,6 +158,19 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(autoLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(autoLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(autoLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.user = null;
         state.error = action.payload as string;
       });
   }
