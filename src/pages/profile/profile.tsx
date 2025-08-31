@@ -38,14 +38,7 @@ export const Profile: FC = () => {
     };
     if (formValue.password) payload.password = formValue.password;
 
-    dispatch(updateUser(payload))
-      .unwrap()
-      .then((user) => {
-        console.log('Профиль обновлён', user);
-      })
-      .catch((err) => {
-        console.error('Ошибка обновления профиля', err);
-      });
+    dispatch(updateUser(payload)).unwrap();
   };
 
   const handleCancel = (e: SyntheticEvent) => {

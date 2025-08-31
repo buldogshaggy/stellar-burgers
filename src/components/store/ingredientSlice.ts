@@ -23,7 +23,7 @@ const initialState: IngredientsState = {
   orderModalData: null
 };
 
-// Thunk для запроса ингредиентов
+//Thunk для запроса ингредиентов
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
   async (_, { rejectWithValue }) => {
@@ -36,7 +36,7 @@ export const fetchIngredients = createAsyncThunk(
   }
 );
 
-// Thunk для заказа бургера
+//Thunk для заказа бургера
 export const orderBurger = createAsyncThunk(
   'ingredients/orderBurger',
   async (ingredientIds: string[], { rejectWithValue }) => {

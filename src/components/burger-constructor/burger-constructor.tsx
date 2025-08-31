@@ -4,9 +4,11 @@ import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { RootState, AppDispatch } from '../store';
 import { orderBurger, closeOrderModal } from '../store/ingredientSlice';
+import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
 
   const constructorItems = useSelector(
     (state: RootState) => state.ingredients.constructorItems
@@ -18,7 +20,14 @@ export const BurgerConstructor: FC = () => {
     (state: RootState) => state.ingredients.orderModalData
   );
 
+  const user = useSelector((state: RootState) => state.user.user);
+
   const onOrderClick = () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     if (!constructorItems.bun || orderRequest) return;
 
     const ingredientIds = constructorItems.ingredients.map(

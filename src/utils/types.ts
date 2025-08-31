@@ -44,3 +44,14 @@ export type TRegisterData = {
 };
 
 export type TTabMode = 'bun' | 'sauce' | 'main';
+
+export type TIngredientsWithCount = Record<
+  string,
+  TIngredient & { count: number }
+>;
+
+export type TOrderInfo = TOrder & {
+  ingredientsInfo: TIngredientsWithCount;
+  date: Date;
+  total: number;
+};

@@ -20,7 +20,7 @@ const initialState: UserState = {
   error: null
 };
 
-// 🔹 Логин
+//Логин
 export const loginUser = createAsyncThunk(
   'user/login',
   async (data: { email: string; password: string }, thunkAPI) => {
@@ -35,7 +35,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// 🔹 Регистрация
+//Регистрация
 export const registerUser = createAsyncThunk(
   'user/register',
   async (data: TRegisterData, thunkAPI) => {
@@ -50,7 +50,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// 🔹 Получить данные пользователя (например, при загрузке приложения)
+//Получить данные пользователя
 export const fetchUser = createAsyncThunk(
   'user/fetchUser',
   async (_, thunkAPI) => {
@@ -65,7 +65,7 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
-// 🔹 Обновить данные пользователя
+//Обновить данные пользователя
 export const updateUser = createAsyncThunk(
   'user/update',
   async (data: Partial<TRegisterData>, thunkAPI) => {
@@ -92,7 +92,7 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // регистрация
+      //регистрация
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -105,7 +105,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // логин
+      //логин
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -118,7 +118,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // получение user
+      //получение user
       .addCase(fetchUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -131,7 +131,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // обновление user
+      //обновление user
       .addCase(updateUser.pending, (state) => {
         state.loading = true;
         state.error = null;

@@ -67,8 +67,12 @@ type TFeedsResponse = TServerResponse<{
   totalToday: number;
 }>;
 
-type TOrdersResponse = TServerResponse<{
+export type TOrdersResponse = TServerResponse<{
   data: TOrder[];
+}>;
+
+export type TSingleOrderResponse = TServerResponse<{
+  order: TOrder;
 }>;
 
 export const getIngredientsApi = () =>
@@ -129,7 +133,7 @@ export const getOrderByNumberApi = (number: number) =>
     headers: {
       'Content-Type': 'application/json'
     }
-  }).then((res) => checkResponse<TOrderResponse>(res));
+  }).then((res) => checkResponse<TSingleOrderResponse>(res));
 
 export type TRegisterData = {
   email: string;
@@ -220,7 +224,6 @@ export const getUserApi = () =>
 
 export const updateUserApi = (user: Partial<TRegisterData>) => {
   const token = getCookie('accessToken');
-  console.log('Access token:', token); // <- проверка токена
 
   return fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
     method: 'PATCH',

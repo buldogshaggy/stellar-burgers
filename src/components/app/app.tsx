@@ -22,25 +22,25 @@ import styles from './app.module.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../components/store';
 
-// Защищённый маршрут (только для авторизованных)
+//Защищённый маршрут (только для авторизованных)
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const user = useSelector((state: RootState) => state.user.user);
   const location = useLocation();
 
   if (!user) {
-    // если не авторизован → редиректим на /login
+    //если не авторизован редиректим на /login
     return <Navigate to='/login' state={{ from: location }} replace />;
   }
 
   return children;
 };
 
-// Публичный маршрут (только для неавторизованных)
+//Публичный маршрут (только для неавторизованных)
 const PublicRoute = ({ children }: { children: JSX.Element }) => {
   const user = useSelector((state: RootState) => state.user.user);
 
   if (user) {
-    // если уже залогинен → отправляем на профиль
+    //если уже залогинен отправляем на профиль
     return <Navigate to='/profile' replace />;
   }
 
@@ -60,12 +60,10 @@ const App = () => {
     <div className={styles.app}>
       <AppHeader />
 
-      {/* Основные маршруты */}
       <Routes location={state?.background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
 
-        {/* Публичные страницы */}
         <Route
           path='/login'
           element={
@@ -99,7 +97,6 @@ const App = () => {
           }
         />
 
-        {/* Защищённые страницы */}
         <Route
           path='/profile'
           element={
@@ -117,11 +114,9 @@ const App = () => {
           }
         />
 
-        {/* 404 */}
         <Route path='*' element={<NotFound404 />} />
       </Routes>
 
-      {/* Модалки */}
       {state?.background && (
         <Routes>
           <Route

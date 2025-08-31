@@ -11,20 +11,20 @@ import { fetchIngredients } from '../store/ingredientSlice';
 export const BurgerIngredients: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // Получаем ингредиенты и статус из Redux
+  //Получаем ингредиенты и статус из Redux
   const { items, status, error } = useSelector(
     (state: RootState) => state.ingredients
   );
 
-  // Делим ингредиенты на категории
+  //Делим ингредиенты на категории
   const buns = items.filter((i) => i.type === 'bun');
   const mains = items.filter((i) => i.type === 'main');
   const sauces = items.filter((i) => i.type === 'sauce');
 
-  // Табы
+  //Табы
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
 
-  // Refs для скролла
+  //Refs для скролла
   const titleBunRef = useRef<HTMLHeadingElement>(null);
   const titleMainRef = useRef<HTMLHeadingElement>(null);
   const titleSaucesRef = useRef<HTMLHeadingElement>(null);
@@ -33,14 +33,14 @@ export const BurgerIngredients: FC = () => {
   const [mainsRef, inViewFilling] = useInView({ threshold: 0.5 });
   const [saucesRef, inViewSauces] = useInView({ threshold: 0.5 });
 
-  // Запрашиваем ингредиенты с сервера при монтировании
+  //Запрашиваем ингредиенты с сервера при монтировании
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchIngredients());
     }
   }, [dispatch, status]);
 
-  // Автоматическое переключение таба при скролле
+  //Автоматическое переключение таба при скролле
   useEffect(() => {
     if (inViewBuns) {
       setCurrentTab('bun');
@@ -51,7 +51,7 @@ export const BurgerIngredients: FC = () => {
     }
   }, [inViewBuns, inViewFilling, inViewSauces]);
 
-  // Обработчик клика по табу
+  //Обработчик клика по табу
   const onTabClick = (tab: string) => {
     setCurrentTab(tab as TTabMode);
     if (tab === 'bun')
@@ -61,10 +61,6 @@ export const BurgerIngredients: FC = () => {
     if (tab === 'sauce')
       titleSaucesRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  // Лоадер или ошибка
-  if (status === 'loading') return <p>Загрузка ингредиентов...</p>;
-  if (status === 'failed') return <p>Ошибка загрузки: {error}</p>;
 
   return (
     <BurgerIngredientsUI

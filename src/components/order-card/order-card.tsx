@@ -1,5 +1,5 @@
 import { FC, memo, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 
@@ -11,6 +11,7 @@ const maxIngredients = 6;
 
 export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const ingredients = useSelector(
     (state: RootState) => state.ingredients.items
@@ -50,11 +51,23 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
 
   if (!orderInfo) return null;
 
+  const handleClick = () => {
+    if (location.pathname.startsWith('/profile')) {
+      navigate(`/profile/orders/${order.number}`, {
+        state: { background: location }
+      });
+    } else {
+      navigate(`/feed/${order.number}`, { state: { background: location } });
+    }
+  };
+
   return (
-    <OrderCardUI
-      orderInfo={orderInfo}
-      maxIngredients={maxIngredients}
-      locationState={{ background: location }}
-    />
+    <div onClick={handleClick}>
+      <OrderCardUI
+        orderInfo={orderInfo}
+        maxIngredients={maxIngredients}
+        locationState={{ background: location }}
+      />
+    </div>
   );
 });
