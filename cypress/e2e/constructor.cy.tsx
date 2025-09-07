@@ -70,6 +70,14 @@ describe('Конструктор бургеров с моками', () => {
     cy.get('button').contains('Оформить заказ').should('not.be.disabled');
   });
 
+  it("Открытие и закрытие страницы ингредиента", () => {
+  cy.get("[data-cy=ingredient-card]").first().click();
+  cy.url().should("include", "/ingredients/1");
+  cy.get("[data-cy=ingredient-name]").should("contain.text", "Краторная булка N-200i");
+  cy.go("back");
+  cy.get("[data-cy=ingredient-card]").should("have.length.at.least", 1);
+});
+
   it("Создание заказа с редиректом на логин для неавторизованного пользователя", () => {
     cy.clearCookies();
     cy.clearLocalStorage();
