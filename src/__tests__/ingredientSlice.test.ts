@@ -5,56 +5,31 @@ import reducer, {
   moveIngredient,
   closeOrderModal,
   fetchIngredients,
-  orderBurger
+  orderBurger,
+  initialState
 } from '../components/store/ingredientSlice';
 import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 
 describe('ingredientSlice reducer', () => {
-  const initialState = {
-    items: [] as TIngredient[],
-    status: 'idle' as const,
-    error: null as string | null,
-    constructorItems: {
-      bun: null as TConstructorIngredient | null,
-      ingredients: [] as TConstructorIngredient[]
-    },
-    orderRequest: false,
-    orderModalData: null as TOrder | null
-  };
-
   it('должен вернуть initial state при неизвестном экшене', () => {
-    expect(reducer(undefined, { type: 'UNKNOWN_ACTION' })).toEqual(
-      initialState
-    );
+    expect(reducer(undefined, { type: 'UNKNOWN_ACTION' })).toEqual(initialState);
   });
 
   it('устанавливает булку (setBun)', () => {
-    const bun = {
-      _id: 'bun1',
-      name: 'Булка',
-      type: 'bun'
-    } as TConstructorIngredient;
+    const bun = { _id: 'bun1', name: 'Булка', type: 'bun' } as TConstructorIngredient;
     const state = reducer(initialState, setBun(bun));
     expect(state.constructorItems.bun).toEqual(bun);
   });
 
   it('добавляет ингредиент (addIngredient)', () => {
-    const ingredient = {
-      _id: 'ing1',
-      name: 'Котлета',
-      type: 'main'
-    } as TConstructorIngredient;
+    const ingredient = { _id: 'ing1', name: 'Котлета', type: 'main' } as TConstructorIngredient;
     const state = reducer(initialState, addIngredient(ingredient));
     expect(state.constructorItems.ingredients).toHaveLength(1);
     expect(state.constructorItems.ingredients[0]).toEqual(ingredient);
   });
 
   it('удаляет ингредиент (removeIngredient)', () => {
-    const ingredient = {
-      _id: 'ing1',
-      name: 'Котлета',
-      type: 'main'
-    } as TConstructorIngredient;
+    const ingredient = { _id: 'ing1', name: 'Котлета', type: 'main' } as TConstructorIngredient;
     const stateWithIngredient = {
       ...initialState,
       constructorItems: { bun: null, ingredients: [ingredient] }
@@ -64,24 +39,13 @@ describe('ingredientSlice reducer', () => {
   });
 
   it('перемещает ингредиент (moveIngredient)', () => {
-    const ing1 = {
-      _id: '1',
-      name: 'Салат',
-      type: 'main'
-    } as TConstructorIngredient;
-    const ing2 = {
-      _id: '2',
-      name: 'Сыр',
-      type: 'main'
-    } as TConstructorIngredient;
+    const ing1 = { _id: '1', name: 'Салат', type: 'main' } as TConstructorIngredient;
+    const ing2 = { _id: '2', name: 'Сыр', type: 'main' } as TConstructorIngredient;
     const stateWithIngredients = {
       ...initialState,
       constructorItems: { bun: null, ingredients: [ing1, ing2] }
     };
-    const state = reducer(
-      stateWithIngredients,
-      moveIngredient({ fromIndex: 0, toIndex: 1 })
-    );
+    const state = reducer(stateWithIngredients, moveIngredient({ fromIndex: 0, toIndex: 1 }));
     expect(state.constructorItems.ingredients[0]).toEqual(ing2);
     expect(state.constructorItems.ingredients[1]).toEqual(ing1);
   });
@@ -96,9 +60,7 @@ describe('ingredientSlice reducer', () => {
   //extraReducers
 
   it('fetchIngredients.pending → status=loading', () => {
-    const state = reducer(initialState, {
-      type: fetchIngredients.pending.type
-    });
+    const state = reducer(initialState, { type: fetchIngredients.pending.type });
     expect(state.status).toBe('loading');
     expect(state.error).toBeNull();
   });
@@ -132,17 +94,9 @@ describe('ingredientSlice reducer', () => {
     const prevState = {
       ...initialState,
       constructorItems: {
-        bun: {
-          _id: 'bun1',
-          name: 'Булка',
-          type: 'bun'
-        } as TConstructorIngredient,
+        bun: { _id: 'bun1', name: 'Булка', type: 'bun' } as TConstructorIngredient,
         ingredients: [
-          {
-            _id: 'ing1',
-            name: 'Котлета',
-            type: 'main'
-          } as TConstructorIngredient
+          { _id: 'ing1', name: 'Котлета', type: 'main' } as TConstructorIngredient
         ]
       }
     };

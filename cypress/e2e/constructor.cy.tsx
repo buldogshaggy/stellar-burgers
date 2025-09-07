@@ -1,5 +1,16 @@
 /// <reference types="cypress" />
 
+const testUrl = 'http://localhost:4000';
+
+const selectors = {
+  ingredientCard: "[data-cy=ingredient-card]",
+  orderModal: "[data-cy=order-modal]",
+  orderNumber: "[data-cy=order-number]",
+  modalClose: "[data-cy=modal-close]",
+  constructorFillingItem: "[data-cy=constructor-filling-item]",
+  ingredientName: "[data-cy=ingredient-name]",
+};
+
 Cypress.on('uncaught:exception', () => {
   return false;
 });
@@ -38,7 +49,7 @@ describe('Конструктор бургеров с моками', () => {
       }
     }).as('createOrder');
 
-    cy.visit('http://localhost:4000/');
+    cy.visit(`${testUrl}/`);
     cy.wait('@getIngredients');
   });
 
@@ -48,21 +59,21 @@ describe('Конструктор бургеров с моками', () => {
   });
 
   it("Главная страница показывает ингредиенты", () => {
-    cy.get("[data-cy=ingredient-card]").should("have.length", 2);
-    cy.get("[data-cy=ingredient-card]").first().should("contain.text", "Краторная булка N-200i");
-    cy.get("[data-cy=ingredient-card]").last().should("contain.text", "Биокотлета из марсианской Магнолии");
+    cy.get(selectors.ingredientCard).should("have.length", 2);
+    cy.get(selectors.ingredientCard).first().should("contain.text", "Краторная булка N-200i");
+    cy.get(selectors.ingredientCard).last().should("contain.text", "Биокотлета из марсианской Магнолии");
   });
   
   it("Добавление ингредиентов в конструктор через кнопку", () => {
     cy.contains('Выберите булки').should('exist');
     cy.contains('Выберите начинку').should('exist');
 
-    cy.get("[data-cy=ingredient-card]").first().find('button').first().click({ force: true });
+    cy.get(selectors.ingredientCard).first().find('button').first().click({ force: true });
     cy.wait(300);
     cy.contains('Выберите булки').should('not.exist');
     cy.contains('Краторная булка').should('exist');
 
-    cy.get("[data-cy=ingredient-card]").last().find('button').first().click({ force: true });
+    cy.get(selectors.ingredientCard).last().find('button').first().click({ force: true });
     cy.wait(300);
     cy.contains('Выберите начинку').should('not.exist');
     cy.contains('Биокотлета из марсианской Магнолии').should('exist');
@@ -71,19 +82,19 @@ describe('Конструктор бургеров с моками', () => {
   });
 
   it("Открытие и закрытие страницы ингредиента", () => {
-  cy.get("[data-cy=ingredient-card]").first().click();
-  cy.url().should("include", "/ingredients/1");
-  cy.get("[data-cy=ingredient-name]").should("contain.text", "Краторная булка N-200i");
-  cy.go("back");
-  cy.get("[data-cy=ingredient-card]").should("have.length.at.least", 1);
-});
+    cy.get(selectors.ingredientCard).first().click();
+    cy.url().should("include", "/ingredients/1");
+    cy.get(selectors.ingredientName).should("contain.text", "Краторная булка N-200i");
+    cy.go("back");
+    cy.get(selectors.ingredientCard).should("have.length.at.least", 1);
+  });
 
   it("Создание заказа с редиректом на логин для неавторизованного пользователя", () => {
     cy.clearCookies();
     cy.clearLocalStorage();
 
-    cy.get("[data-cy=ingredient-card]").first().find('button').first().click({ force: true });
-    cy.get("[data-cy=ingredient-card]").last().find('button').first().click({ force: true });
+    cy.get(selectors.ingredientCard).first().find('button').first().click({ force: true });
+    cy.get(selectors.ingredientCard).last().find('button').first().click({ force: true });
     cy.wait(500);
 
     cy.get('button').contains('Оформить заказ').click({ force: true });
@@ -93,69 +104,69 @@ describe('Конструктор бургеров с моками', () => {
   });
 
   it("Полный процесс создания заказа для авторизованного пользователя", () => {
-  cy.visit('http://localhost:4000/login');
+    cy.visit(`${testUrl}/login`);
   
-  cy.intercept('POST', 'api/auth/login', {
-    statusCode: 200,
-    body: {
-      success: true,
-      user: { email: 'test@example.com', name: 'Test User' },
-      accessToken: 'mock-access-token',
-      refreshToken: 'mock-refresh-token'
-    }
-  }).as('login');
+    cy.intercept('POST', 'api/auth/login', {
+      statusCode: 200,
+      body: {
+        success: true,
+        user: { email: 'test@example.com', name: 'Test User' },
+        accessToken: 'mock-access-token',
+        refreshToken: 'mock-refresh-token'
+      }
+    }).as('login');
 
-  cy.get('input[name=email]').type('test@example.com');
-  cy.get('input[name=password]').type('password123');
-  cy.get('button').contains('Войти').click();
+    cy.get('input[name=email]').type('test@example.com');
+    cy.get('input[name=password]').type('password123');
+    cy.get('button').contains('Войти').click();
 
-  cy.wait('@login');
-  cy.url().should('include', '/profile');
+    cy.wait('@login');
+    cy.url().should('include', '/profile');
 
-  cy.visit('http://localhost:4000/');
-  cy.wait('@getIngredients');
+    cy.visit(`${testUrl}/`);
+    cy.wait('@getIngredients');
 
-  //Добавляем ингредиенты
-  cy.get("[data-cy=ingredient-card]").first().find('button').first().click({ force: true });
-  cy.get("[data-cy=ingredient-card]").last().find('button').first().click({ force: true });
-  cy.wait(500);
+    //Добавляем ингредиенты
+    cy.get(selectors.ingredientCard).first().find('button').first().click({ force: true });
+    cy.get(selectors.ingredientCard).last().find('button').first().click({ force: true });
+    cy.wait(500);
 
-  //Запоминаем состояние конструктора ДО заказа
-  cy.get('body').then(($body) => {
-    const hasBun = !$body.text().includes('Выберите булки');
-    const hasFilling = !$body.text().includes('Выберите начинку');
+    //Запоминаем состояние конструктора ДО заказа
+    cy.get('body').then(($body) => {
+      const hasBun = !$body.text().includes('Выберите булки');
+      const hasFilling = !$body.text().includes('Выберите начинку');
     
-    //Нажимаем кнопку заказа
-    cy.get('button').contains('Оформить заказ').click({ force: true });
+      //Нажимаем кнопку заказа
+      cy.get('button').contains('Оформить заказ').click({ force: true });
 
-    //Проверяем отправку запроса
-    cy.wait('@createOrder', { timeout: 10000 });
+      //Проверяем отправку запроса
+      cy.wait('@createOrder', { timeout: 10000 });
 
-    //Проверяем модальное окно заказа
-    cy.get('[data-cy=order-modal]').should('be.visible');
-    cy.get('[data-cy=order-number]').should('contain.text', '12345');
+      //Проверяем модальное окно заказа
+      cy.get(selectors.orderModal).should('be.visible');
+      cy.get(selectors.orderNumber).should('contain.text', '12345');
 
-    //Закрываем модальное окно
-    cy.get('[data-cy=modal-close]').click();
-    cy.get('[data-cy=order-modal]').should('not.exist');
+      //Закрываем модальное окно
+      cy.get(selectors.modalClose).click();
+      cy.get(selectors.orderModal).should('not.exist');
 
-    cy.wait(1000);
+      cy.wait(1000);
     
-    //Проверяем очистку конструктора - должны вернуться сообщения "Выберите..."
-    if (hasBun) {
-      cy.contains('Выберите булки').should('exist');
-    }
-    if (hasFilling) {
-      cy.contains('Выберите начинку').should('exist');
-    }
+      //Проверяем очистку конструктора
+      if (hasBun) {
+        cy.contains('Выберите булки').should('exist');
+      }
+      if (hasFilling) {
+        cy.contains('Выберите начинку').should('exist');
+      }
     
-    //Дополнительная проверка - не должно быть ингредиентов
-    cy.get('[data-cy=constructor-filling-item]').should('not.exist');
+      //Дополнительная проверка - не должно быть ингредиентов
+      cy.get(selectors.constructorFillingItem).should('not.exist');
+    });
   });
-});
 
   it("Тест авторизации с редиректом на профиль", () => {
-    cy.visit('http://localhost:4000/login');
+    cy.visit(`${testUrl}/login`);
     
     cy.intercept('POST', 'api/auth/login', {
       statusCode: 200,
@@ -172,11 +183,11 @@ describe('Конструктор бургеров с моками', () => {
     cy.get('button').contains('Войти').click();
     
     cy.wait('@login');
-    cy.url().should('eq', 'http://localhost:4000/profile');
+    cy.url().should('eq', `${testUrl}/profile`);
   });
 
   it("Проверка работы с токенами авторизации", () => {
-    cy.visit('http://localhost:4000/login');
+    cy.visit(`${testUrl}/login`);
     
     cy.intercept('POST', 'api/auth/login', {
       statusCode: 200,

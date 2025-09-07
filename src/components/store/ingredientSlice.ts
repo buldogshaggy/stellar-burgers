@@ -14,7 +14,7 @@ interface IngredientsState {
   orderModalData: TOrder | null;
 }
 
-const initialState: IngredientsState = {
+export const initialState: IngredientsState = {
   items: [],
   status: 'idle',
   error: null,
