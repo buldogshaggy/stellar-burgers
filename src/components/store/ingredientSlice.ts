@@ -14,7 +14,7 @@ interface IngredientsState {
   orderModalData: TOrder | null;
 }
 
-const initialState: IngredientsState = {
+export const initialState: IngredientsState = {
   items: [],
   status: 'idle',
   error: null,
@@ -102,6 +102,7 @@ const ingredientsSlice = createSlice({
         (state, action: PayloadAction<TOrder>) => {
           state.orderRequest = false;
           state.orderModalData = action.payload;
+          state.constructorItems = { bun: null, ingredients: [] };
         }
       )
       .addCase(orderBurger.rejected, (state, action) => {
